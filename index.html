@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bakekok</title>
+</head>
+<body>
+  
+</body>
+</html><!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lirik Lagu — Animasi</title>
+  <style>
+    :root{
+      --bg1: #a8e6cf;
+      --bg2: #ffb3c6;
+      --text: #ffffff;
+    }
+    html,body{height:100%;margin:0;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{
+      background: linear-gradient(135deg,var(--bg1), var(--bg2));
+      overflow:hidden;
+      display:flex;align-items:center;justify-content:center;padding:30px;
+    }
+
+    .hearts {position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+    .heart{position:absolute;bottom:-60px;width:28px;height:28px;transform-origin:center center;opacity:0;}
+
+    .card{
+      position:relative;z-index:2;max-width:820px;width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-radius:18px;padding:28px 26px;box-shadow:0 10px 30px rgba(0,0,0,0.22);
+      backdrop-filter: blur(6px);color:var(--text);border:1px solid rgba(255,255,255,0.08);
+    }
+    h1{margin:0 0 8px 0;font-size:20px;letter-spacing:0.6px}
+    .meta{opacity:0.9;font-size:13px;margin-bottom:12px}
+
+    .viewport{
+      height:180px; /* tampilkan 4 baris */
+      overflow:hidden;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      padding:18px;
+      font-size:20px;line-height:1.5;font-weight:600;color:var(--text);
+    }
+
+    #lyrics{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      transition:transform 0.8s ease;
+    }
+
+    .line{opacity:0.4;transition:opacity 0.5s;}
+    .line.active{opacity:1;}
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+
+  <div class="card">
+    <h1>Sempurna — haha</h1>
+    <div class="meta">jelek jirr</div>
+
+    <div class="viewport">
+      <div id="lyrics">
+        <span class="line" data-time="0">Can you hear my song for you</span>
+        <span class="line" data-time="5">All the poems never knew</span>
+        <span class="line" data-time="10">You ware written in my stars</span>
+        <span class="line" data-time="13">The suture of my scars</span>
+        <span class="line" data-time="16">Oh my darling, you are</span>
+        <span class="line" data-time="20">Can you hear my song for you</span>
+        <span class="line" data-time="25">All the poems never knew</span>
+        <span class="line" data-time="30">You are written in my stars</span>
+        <span class="line" data-time="33">The suture of my scars</span>
+        <span class="line" data-time="36">Oh darling, you are</span>
+        <span class="line" data-time="41">Oh my darling, you are</span>
+        <span class="line" data-time="48">Perfection</span>
+      </div>
+    </div>
+    
+    <audio id="lagu" src="mp.3.mp3"></audio>
+    <button id="playBtn">▶️ Putar Lagu</button>
+  </div>
+  
+  <script>
+    const audio = document.getElementById("lagu");
+    const playBtn = document.getElementById("playBtn");
+    const lyrics = document.getElementById("lyrics");
+    const lines = document.querySelectorAll('#lyrics .line');
+
+    let currentLine = 0;
+    const offsetDelay = 0.3; // delay biar di HP nggak lari duluan
+
+    playBtn.addEventListener("click", () => {
+      audio.play();
+      playBtn.style.display = "none"; 
+      currentLine = 0;
+      requestAnimationFrame(syncLyrics);
+    });
+
+    function syncLyrics(){
+      const now = audio.currentTime;
+      if(currentLine < lines.length){
+        const lineTime = parseFloat(lines[currentLine].dataset.time);
+        if(now >= lineTime + offsetDelay){
+          lines.forEach(l => l.classList.remove("active"));
+          lines[currentLine].classList.add("active");
+
+          const offset = currentLine * (lines[0].offsetHeight + 14); 
+          lyrics.style.transform = `translateY(-${offset}px)`;
+
+          currentLine++;
+        }
+      }
+      if(!audio.paused){
+        requestAnimationFrame(syncLyrics);
+      }
+    }
+
+    // Floating hearts
+    const heartsContainer = document.getElementById('hearts');
+    const heartColors = ['#ff6b8a','#ff8fb3','#ffcad4','#ff3b6f','#ffb3c6'];
+    function createHeart() {
+      const h = document.createElement('div');
+      h.className='heart';
+      const size = 16 + Math.random()*34;
+      h.style.width = size+'px'; h.style.height = size+'px';
+      h.style.left = (Math.random()*100)+'%';
+      const color = heartColors[Math.floor(Math.random()*heartColors.length)];
+      h.innerHTML = `<svg viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.2-4.35-9.3-7.05C-0.3 9.9 3.6 4 7.7 5.25 9.6 5.9 11 7.6 12 9c1-1.4 2.4-3.1 4.3-3.75 4.1-1.25 8 4.65 4.0 8.7C19.2 16.65 12 21 12 21z"/></svg>`;
+      heartsContainer.appendChild(h);
+      const duration = 5000 + Math.random()*7000;
+      h.animate([
+        { transform: `translateY(0) scale(0.9)`, opacity:0 },
+        { transform: `translateY(-110vh) scale(1)`, opacity:1 }
+      ],{duration:duration,easing:'cubic-bezier(.12,.74,.24,1)'}).onfinish = ()=> h.remove();
+    }
+    setInterval(()=>{ createHeart(); }, 380);
+  </script>
+</body>
+</html>
